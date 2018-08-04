@@ -1,0 +1,11 @@
+version: '2'
+services:
+    feignproducer-postgresql:
+        image: postgres:10.4
+        # volumes:
+        #     - ~/volumes/jhipster/feignproducer/postgresql/:/var/lib/postgresql/data/
+        environment:
+            - POSTGRES_USER=feignproducer
+            - POSTGRES_PASSWORD=
+        ports:
+            - 5432:5432
