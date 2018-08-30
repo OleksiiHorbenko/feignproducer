@@ -2,6 +2,8 @@ package o.horbenko.web.rest.errors;
 
 import o.horbenko.web.rest.util.HeaderUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
  */
 @ControllerAdvice
 public class ExceptionTranslator implements ProblemHandling {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Post-process Problem payload to add the message key for front-end if needed
@@ -105,4 +109,20 @@ public class ExceptionTranslator implements ProblemHandling {
             .build();
         return create(ex, problem, request);
     }
+
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Problem> handleRuntimeException(RuntimeException e, NativeWebRequest request) {
+        log.error(" --- handleRuntimeException message : {} ", e.getMessage());
+
+        Problem problem = Problem.builder()
+            .withStatus(Status.I_AM_A_TEAPOT)
+            .with("exceptionType", e.getClass().getTypeName())
+            .with("exceptionMessage", e.getMessage())
+            .with("message", "error.http.500")
+            .build();
+
+        return create(e, problem, request);
+    }
+
 }
